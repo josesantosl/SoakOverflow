@@ -53,7 +53,7 @@ class Agent():
         return f"{self.agent_id} ({self.x},{self.y}) wet: {self.wetness}"
 
 
-    def locate(x:int,y:int):
+    def locate(self,x,y):
         """ set actual position for the agent.
         x : int
             X coordinate (0 is leftmost)
@@ -63,13 +63,14 @@ class Agent():
         self.x = x
         self.y = y
 
-    def distance(enemy: Agent) -> float :
+    def distance(self,enemy):
         """calculate the distance between a enemy and you """
         return math.sqrt(pow(self.x-enemy.x,2) + pow(self.y-enemy.y,2))
 
 
-    def shoot(enemy : Agent) -> int:
-        """answer to the benefit to shoot to the enemy at that range or cooldown. it returns:
+    def shoot(self,enemy):
+        """answer to the benefit to shoot to the enemy at that range or cooldown.
+        it returns:
             1 : if it is inside the optimal range and don't have cooldown.
             0 : is out of range, can shoot with halved damage.
            -1 : the distance is the double of the optimal range.
@@ -79,7 +80,7 @@ class Agent():
         elif  dist < 2*optimal_range : return 0
         else: return -1
 
-    def nextTo() -> int:
+    def nextTo(self):
         """return the ID of the closest enemy to him."""
         closeid   = None
         closedist = None
@@ -89,7 +90,7 @@ class Agent():
                 temp = self.distance(en)
                 if temp < closedist:
                     closedist = temp
-                    closeid = en.agent_id
+                    closeid = a.agent_id
         return closeid
 
 my_id = int(input()) # My player id (0 or 1)
@@ -120,6 +121,8 @@ for i in range(height):
         x = int(inputs[3*j])
         y = int(inputs[3*j+1])
         tile_type = int(inputs[3*j+2])
+
+        #mapa[y,x] = tile_type
 
 # game loop
 while True:
