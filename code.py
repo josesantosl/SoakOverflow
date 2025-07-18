@@ -49,20 +49,30 @@ class Agent():
         self.splash_bombs   = splash_bombs
         self.x              = None
         self.y              = None
+        self.wetness        = None
 
     def __str__(self) -> str:
-        return f"{self.agent_id} ({self.x},{self.y}) wet: {self.wetness}"
+        return f'{self.agent_id} ({self.x},{self.y}) wet:{self.wetness}'
 
 
-    def locate(self, x:int , y:int):
-        """ set actual position for the agent.
+    def update(self, x:int, y:int, cooldown:int, splash_bombs:int, wetness:int) -> None:
+        """ update info for each turn.
         x : int
             X coordinate (0 is leftmost)
         y : int
             Y coordinate (0 is uppermost)
+        cooldown : int
+            number of turns left until this agent can shoot again
+        splash_bombs : int
+            current amount of splash bombs available to this agent
+        wetness : int
+            current wetness of the age
         """
         self.x = x
         self.y = y
+        self.cooldown = cooldown
+        self.splash_bombs= splash_bombs
+        self.wetness = wetness
 
     def distance(self,enemy:Agent)->float:
         """calculate the distance between a enemy and you """
@@ -152,12 +162,20 @@ while True:
         # cooldown: Number of turns before this agent can shoot
         # wetness: Damage (0-100) this agent has taken
         agent_id, x, y, cooldown, splash_bombs, wetness = [int(j) for j in input().split()]
-        # update location & delete bañados
-        if wetness < 100: # if still alive
-            agent_list[agent_id].locate(x,y)
-        elif agent_id in agent_list.keys : #if not alive but still in our list, delete from all the lists
-            del agent_list[agent_id]
-            myAgents.remove(agent_id)
+
+
+        print(f'{agent_id} wet:{wetness}.', file=sys.stderr, flush=True)
+
+        oldlist.remove(agent_id)
+
+        #update list
+        agent_list[agent_id].update(x, y, cooldown, splash_bombs, wetness)
+        # update & delete bañados
+    for i in oldlist:
+        del agent_list[i]
+        if i in myAgents: myAgents.remove(i)
+        print(f'agente {i} eliminado.', file=sys.stderr, flush=True)
+
 
     my_agent_count = int(input())  # Number of alive agents controlled by you
     for i in range(my_agent_count):
