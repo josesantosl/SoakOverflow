@@ -80,7 +80,20 @@ class Agent():
 
 
     def optimalPosition(self,enemy:Agent)->(int,int):
-        """return the X,Y to be at optimal location to shoot your enemy"""
+        """Calculate the correct position to attack specified enemy
+        Attributes
+        ----------
+        enemy : Agent
+            the agent that we want attack.
+
+        Returns
+        -------
+        nx : int
+            new position on the x-axis
+        ny : int
+            new position on the y-axis
+
+        """
         dx = enemy.x - self.x
         dy = enemy.y - self.y
         distancia = math.hypot(dx,dy)
@@ -111,20 +124,36 @@ class Agent():
     def nextTo(self) -> int:
         """return the ID of the closest enemy to him."""
         closeid   = None
+        wetness   = 0
         closedist = None
 
         for a in list(agent_list.values()):
             if a.player != self.player:
                 temp = self.distance(a)
-                if closedist is None or temp < closedist :
+                if closedist is None or temp < closedist  or (temp == closedist and a.wetness>wetness):
                     closedist = temp
                     closeid = a.agent_id
+                    wetness = a.wetness
+
         return closeid
+
+    def wettest(self):
+        """search the wettest agent from the other player
+        """
+        wet = 0
+        enemyID = 0
+        for ag in agent_list.values():
+            if ag.player != self.player and ag.wetness > wet and self.shoot(ag):
+                wet = ag.wetness
+                enemyID = ag.agent_id
+
+        return enemyID
 
 my_id = int(input()) # My player id (0 or 1)
 agent_data_count = int(input())  # Total number of agents in the game
 myAgents  = []
 
+print("Our agents:", file=sys.stderr, flush=True)
 for i in range(agent_data_count):
     # agent_id:       Unique identifier for this agent
     # player:         Player id of this agent
@@ -140,6 +169,11 @@ for i in range(agent_data_count):
         myAgents.append(agent_id)
         print(myAgents[-1], file=sys.stderr, flush=True)
 
+print("Enemies:", file=sys.stderr, flush=True)
+for a in agent_list.values():
+    print(myAgents[-1], file=sys.stderr, flush=True)
+
+    
 # width: Width of the game map
 # height: Height of the game map
 width, height = [int(i) for i in input().split()]
@@ -157,6 +191,7 @@ for i in range(height):
 
 # game loop
 while True:
+    oldlist = list(agent_list.keys())
     agent_count = int(input())  # Total number of agents still in the game
     for i in range(agent_count):
         # cooldown: Number of turns before this agent can shoot
@@ -187,7 +222,8 @@ while True:
         #print("HUNKER_DOWN")
         respuesta = f'{myAgents[i]};'
         actualAgent = agent_list[myAgents[i]]
-        closest = agent_list[actualAgent.nextTo()]
+        #closest = agent_list[actualAgent.nextTo()]
+        closest = agent_list[actualAgent.wettest()]
         if not actualAgent.shoot(closest):
             nx,ny = actualAgent.optimalPosition(closest)
             respuesta += f'MOVE {nx} {ny};'
