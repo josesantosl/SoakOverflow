@@ -128,7 +128,7 @@ for i in range(agent_data_count):
 
     if player == my_id:
         myAgents.append(agent_id)
-        print(myAgents.last(), file=sys.stderr, flush=True)
+        print(myAgents[-1], file=sys.stderr, flush=True)
 
 # width: Width of the game map
 # height: Height of the game map
@@ -167,10 +167,9 @@ while True:
 
         # One line per agent: <agentId>;<action1;action2;...> actions are "MOVE x y | SHOOT id | THROW x y | HUNKER_DOWN | MESSAGE text"
         #print("HUNKER_DOWN")
-        #TODO: compose a string con una serie de condicionales para diseñar un string completo en movimientos, y disparos
         respuesta = f'{myAgents[i]};'
         actualAgent = agent_list[myAgents[i]]
-        closest = actualAgent.nextTo()
+        closest = agent_list[actualAgent.nextTo()]
         if not actualAgent.shoot(closest):
             nx,ny = actualAgent.optimalPosition(closest)
             respuesta += f'MOVE {nx} {ny};'
