@@ -143,7 +143,7 @@ class Agent():
         wet = 0
         enemyID = 0
         for ag in agent_list.values():
-            if ag.player != self.player and ag.wetness > wet and self.shoot(ag):
+            if ag.player != self.player and ag.wetness > wet:
                 wet = ag.wetness
                 enemyID = ag.agent_id
 
@@ -215,15 +215,14 @@ while True:
     my_agent_count = int(input())  # Number of alive agents controlled by you
     for i in range(my_agent_count):
 
-        # Write an action using print
         # To debug: print("Debug messages...", file=sys.stderr, flush=True)
 
         # One line per agent: <agentId>;<action1;action2;...> actions are "MOVE x y | SHOOT id | THROW x y | HUNKER_DOWN | MESSAGE text"
         #print("HUNKER_DOWN")
         respuesta = f'{myAgents[i]};'
         actualAgent = agent_list[myAgents[i]]
-        #closest = agent_list[actualAgent.nextTo()]
-        closest = agent_list[actualAgent.wettest()]
+        closest = agent_list[actualAgent.nextTo()]
+        #closest = agent_list[actualAgent.wettest()]
         if not actualAgent.shoot(closest):
             nx,ny = actualAgent.optimalPosition(closest)
             respuesta += f'MOVE {nx} {ny};'
