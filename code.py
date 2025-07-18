@@ -68,6 +68,23 @@ class Agent():
         return math.sqrt(pow(self.x-enemy.x,2) + pow(self.y-enemy.y,2))
 
 
+    def optimalPosition(self,enemy):
+        """return the X,Y to be at optimal location to shoot your enemy"""
+        dx = enemy.x - self.x
+        dy = enemy.y - self.y
+        distancia = math.hypot(dx,dy)
+
+        if distancia <= self.optimal_range:
+            #Is already in the optimal range
+            return self.x, self.y
+
+        #redux the distance to be at the optimal distance
+        factor = (distancia - self.optimal_range)/distancia
+        nx = self.x + dx * factor
+        ny = self.y + dy * factor
+        return nx, ny
+
+
     def shoot(self,enemy):
         """answer to the benefit to shoot to the enemy at that range or cooldown.
         it returns:
@@ -138,7 +155,16 @@ while True:
         # Write an action using print
         # To debug: print("Debug messages...", file=sys.stderr, flush=True)
 
-
         # One line per agent: <agentId>;<action1;action2;...> actions are "MOVE x y | SHOOT id | THROW x y | HUNKER_DOWN | MESSAGE text"
         #print("HUNKER_DOWN")
-        print("MOVE 6 1")
+        #TODO: compose a string con una serie de condicionales para diseñar un string completo en movimientos, y disparos
+        respuesta = f'{myAgents[i]};'
+        actualAgent = agent_list[myAgents[i]]
+        closest = actualAgent.nextTo()
+        if not actualAgent.shoot(closest):
+            nx,ny = actualAgent.optimalPosition(closest)
+            respuesta += f'MOVE {nx} {ny};'
+
+        respuesta += f'SHOOT {closest.agent_id}'
+
+        print(respuesta)
