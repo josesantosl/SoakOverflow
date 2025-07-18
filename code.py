@@ -1,3 +1,4 @@
+from __future__ import annotations
 import sys
 import math
 
@@ -49,11 +50,11 @@ class Agent():
         self.x              = None
         self.y              = None
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.agent_id} ({self.x},{self.y}) wet: {self.wetness}"
 
 
-    def locate(self,x,y):
+    def locate(self, x:int , y:int):
         """ set actual position for the agent.
         x : int
             X coordinate (0 is leftmost)
@@ -63,12 +64,12 @@ class Agent():
         self.x = x
         self.y = y
 
-    def distance(self,enemy):
+    def distance(self,enemy:Agent)->float:
         """calculate the distance between a enemy and you """
-        return math.sqrt(pow(self.x-enemy.x,2) + pow(self.y-enemy.y,2))
+        return math.sqrt(pow(self.x - enemy.x ,2) + pow(self.y-enemy.y,2))
 
 
-    def optimalPosition(self,enemy):
+    def optimalPosition(self,enemy:Agent)->(int,int):
         """return the X,Y to be at optimal location to shoot your enemy"""
         dx = enemy.x - self.x
         dy = enemy.y - self.y
@@ -97,15 +98,15 @@ class Agent():
         elif  dist < 2*optimal_range : return 0
         else: return -1
 
-    def nextTo(self):
+    def nextTo(self) -> int:
         """return the ID of the closest enemy to him."""
         closeid   = None
         closedist = None
 
         for a in list(agent_list.values()):
             if a.player != self.player:
-                temp = self.distance(en)
-                if temp < closedist:
+                temp = self.distance(a)
+                if closedist is None or temp < closedist :
                     closedist = temp
                     closeid = a.agent_id
         return closeid
