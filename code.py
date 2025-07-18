@@ -122,9 +122,12 @@ for i in range(agent_data_count):
     # soaking_power:  Damage output within optimal conditions
     # splash_bombs:   Number of splash bombs this can throw this game
     agent_id, player, shoot_cooldown, optimal_range, soaking_power, splash_bombs = [int(j) for j in input().split()]
-    agent_list.append(Agent(agent_id,player, shoot_cooldown, optimal_range, soaking_power, splash_bombs))
+
+    agent_list[agent_id] = Agent(agent_id,player, shoot_cooldown, optimal_range, soaking_power, splash_bombs)
+
     if player == my_id:
         myAgents.append(agent_id)
+        print(myAgents.last(), file=sys.stderr, flush=True)
 
 # width: Width of the game map
 # height: Height of the game map
@@ -148,6 +151,12 @@ while True:
         # cooldown: Number of turns before this agent can shoot
         # wetness: Damage (0-100) this agent has taken
         agent_id, x, y, cooldown, splash_bombs, wetness = [int(j) for j in input().split()]
+        # update location & delete bañados
+        if wetness < 100: # if still alive
+            agent_list[agent_id].locate(x,y)
+        elif agent_id in agent_list.keys : #if not alive but still in our list, delete from all the lists
+            del agent_list[agent_id]
+            myAgents.remove(agent_id)
 
     my_agent_count = int(input())  # Number of alive agents controlled by you
     for i in range(my_agent_count):
