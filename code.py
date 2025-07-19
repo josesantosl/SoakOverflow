@@ -218,14 +218,40 @@ while True:
         # To debug: print("Debug messages...", file=sys.stderr, flush=True)
 
         # One line per agent: <agentId>;<action1;action2;...> actions are "MOVE x y | SHOOT id | THROW x y | HUNKER_DOWN | MESSAGE text"
-        #print("HUNKER_DOWN")
         respuesta = f'{myAgents[i]};'
         actualAgent = agent_list[myAgents[i]]
         closest = agent_list[actualAgent.nextTo()]
         #closest = agent_list[actualAgent.wettest()]
-        if not actualAgent.shoot(closest):
-            nx,ny = actualAgent.optimalPosition(closest)
-            respuesta += f'MOVE {nx} {ny};'
+
+        #search a cover (ricerca in ampiezza)
+        #TODO: aggiungere limite di distanza e mettere la priorita al livello di copertura.
+        visitedCells=list()
+        notVisitedCells= [(actualAgent.x,actualAgent.y)]
+        founded = False
+        while not founded:
+            nx,ny = notVisitedCells[0]
+            if mapa[ny][nx] > 0:
+                founded = True
+                respuesta += f'MOVE {nx} {ny};'
+            else:
+                #move fron notVisitedCells to visitedCells
+                visitedCells.append(notVisitedCells[0])
+                notVisitedCells.pop(0)
+
+                #add the neighbors to the queue
+                if(nx>0 and (nx-1,ny) not in visitedCells):
+                    notVisitedCells.append((nx-1,ny))
+                if(nx<width-1 and (nx+1,ny) not in visitedCells):
+                    notVisitedCells.append((nx+1,ny))
+                if(ny>0 and (nx,ny-1) not in visitedCells):
+                    notVisitedCells.append((nx,ny-1))
+                if(ny<height and (nx,ny+1) not in visitedCells):
+                    notVisitedCells.append((nx,ny+1))
+
+            if notVisitedCells is None: break
+
+        #direccion = orientation(actualAgent,closest)
+        #nx,ny = actualAgent.optimalPosition(closest)
 
         respuesta += f'SHOOT {closest.agent_id}'
 
